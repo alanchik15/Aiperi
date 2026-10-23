@@ -59,6 +59,50 @@ body.locked {
     width: 100%;
 }
 
+/* ============================================
+   🌟 ЭКРАН С ИМЕНЕМ ИЗ ЗВЁЗД
+   ============================================ */
+.stars-name-screen {
+    position: fixed;
+    inset: 0;
+    background: #050308;
+    z-index: 150;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 1.5s ease, visibility 1.5s ease;
+}
+
+.stars-name-screen.gone {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+#stars-name-canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.stars-skip {
+    position: absolute;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: var(--font-hand);
+    font-size: 1rem;
+    color: var(--cream-muted);
+    opacity: 0.5;
+    letter-spacing: 0.5px;
+    animation: hintFade 3s ease-in-out infinite;
+    pointer-events: none;
+    white-space: nowrap;
+}
+
+/* ============================================
+   ПЫЛИНКИ
+   ============================================ */
 canvas#dust {
     position: fixed;
     inset: 0;
@@ -304,7 +348,6 @@ canvas#dust {
 }
 
 .music-btn svg { width: 20px; height: 20px; }
-
 .music-btn.playing svg { animation: vinylSpin 3s linear infinite; }
 
 .music-btn.muted {
@@ -651,6 +694,177 @@ canvas#dust {
 .daily-text.fade { opacity: 0; }
 
 /* ============================================
+   💌 ТАЙНОЕ ПИСЬМО (печатная машинка)
+   ============================================ */
+.chapter-letter {
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding-top: 6rem;
+    padding-bottom: 6rem;
+}
+
+.letter-seal-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: opacity 0.5s ease;
+}
+
+.letter-seal-wrap.gone {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.letter-seal {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    border: none;
+    background: radial-gradient(circle at 30% 30%, #d13a48 0%, #8a1c2b 55%, #4a0f18 100%);
+    color: #f5d8c2;
+    font-size: 2.4rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 2rem;
+    box-shadow:
+        0 15px 40px rgba(0, 0, 0, 0.6),
+        0 0 60px rgba(201, 48, 62, 0.4),
+        inset 0 -4px 10px rgba(0, 0, 0, 0.5),
+        inset 0 4px 8px rgba(255, 200, 200, 0.4);
+    animation: sealInvite 2.8s ease-in-out infinite;
+    transition: transform 0.3s var(--ease-soft);
+    position: relative;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+.letter-seal::before {
+    content: '';
+    position: absolute;
+    inset: 8px;
+    border-radius: 50%;
+    border: 1px dashed rgba(240, 200, 180, 0.35);
+    pointer-events: none;
+}
+
+.letter-seal:active {
+    transform: scale(0.94);
+}
+
+@keyframes sealInvite {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow:
+            0 15px 40px rgba(0, 0, 0, 0.6),
+            0 0 60px rgba(201, 48, 62, 0.4),
+            inset 0 -4px 10px rgba(0, 0, 0, 0.5),
+            inset 0 4px 8px rgba(255, 200, 200, 0.4);
+    }
+    50% {
+        transform: scale(1.05);
+        box-shadow:
+            0 15px 40px rgba(0, 0, 0, 0.6),
+            0 0 80px rgba(201, 48, 62, 0.6),
+            inset 0 -4px 10px rgba(0, 0, 0, 0.5),
+            inset 0 4px 8px rgba(255, 200, 200, 0.4);
+    }
+}
+
+.letter-seal.cracking {
+    animation: sealCrack 0.75s cubic-bezier(0.5, 0, 0.75, 0) forwards;
+}
+
+@keyframes sealCrack {
+    0% { transform: scale(1) rotate(0deg); opacity: 1; }
+    25% { transform: scale(1.15) rotate(-4deg); opacity: 1; }
+    50% { transform: scale(1.1) rotate(4deg); opacity: 1; }
+    75% { transform: scale(0.9) rotate(-2deg); opacity: 0.7; }
+    100% { transform: scale(0) rotate(0deg); opacity: 0; }
+}
+
+.letter-seal-hint {
+    font-family: var(--font-hand);
+    font-size: 1.25rem;
+    color: var(--cream-dim);
+    letter-spacing: 0.5px;
+    max-width: 300px;
+    line-height: 1.5;
+}
+
+.letter-paper {
+    max-width: 100%;
+    width: 100%;
+    background:
+        linear-gradient(170deg, #f8f0e2 0%, #ece0ce 100%);
+    padding: 2.5rem 1.75rem 2.25rem;
+    border-radius: 4px;
+    box-shadow:
+        0 25px 60px rgba(0, 0, 0, 0.65),
+        0 0 0 1px rgba(0, 0, 0, 0.05),
+        inset 0 0 80px rgba(180, 150, 100, 0.1);
+    text-align: left;
+    position: relative;
+    animation: paperUnfold 1s var(--ease) both;
+    transform-origin: top center;
+}
+
+.letter-paper::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 30px;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.04), transparent);
+    border-radius: 4px 4px 0 0;
+    pointer-events: none;
+}
+
+@keyframes paperUnfold {
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.96) rotateX(-10deg);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1) rotateX(0);
+    }
+}
+
+.typed-text {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    line-height: 1.9;
+    color: #3a2820;
+    white-space: pre-wrap;
+    margin: 0;
+    min-height: 1.9em;
+    font-weight: 400;
+}
+
+.typed-cursor {
+    display: inline-block;
+    width: 2px;
+    height: 1.15em;
+    background: #3a2820;
+    animation: cursorBlink 0.9s step-end infinite;
+    vertical-align: text-bottom;
+    margin-left: 2px;
+    transform: translateY(2px);
+}
+
+@keyframes cursorBlink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+}
+
+/* ============================================
    ФИНАЛ
    ============================================ */
 .chapter-finale {
@@ -893,10 +1107,7 @@ canvas#dust {
     transition: opacity 0.4s var(--ease), visibility 0.4s var(--ease);
 }
 
-.lightbox.open {
-    opacity: 1;
-    visibility: visible;
-}
+.lightbox.open { opacity: 1; visibility: visible; }
 
 .lb-inner {
     display: flex;
@@ -962,6 +1173,7 @@ canvas#dust {
 @media (min-width: 520px) {
     .letter { max-width: 480px; padding: 0 2rem; }
     .photo-item { width: 72%; }
+    .letter-paper { padding: 3rem 2.5rem 2.5rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {
