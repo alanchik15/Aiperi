@@ -7,7 +7,7 @@ const CONFIG = {
     music: 'prince.mp3',
     musicVolume: 0.35,
 
-    starsName: Aqgthb,       // null → берётся herName
+    starsName: null,       // null → берётся herName
     starsHoldTime: 2500,   // мс держать имя после сборки
 
     secretLetter:
