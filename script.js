@@ -3,25 +3,37 @@
    ============================================ */
 const CONFIG = {
     herName: 'Любимая',
-    startDate: '2026-07-18T18:00:00',
-    music: 'prince.mp3',
+    startDate: '2023-06-15T18:00:00',
+    music: 'music/song.mp3',
     musicVolume: 0.35,
-    secretTaps: 3,
-    secretMessage: 'Значит, ты дошла до конца.',
+
+    // ============ 🌟 ИМЯ ИЗ ЗВЁЗД ============
+    // Имя, которое будет собираться из частиц на первом экране.
+    // Если хочешь другое (например "Анечка") — пиши здесь.
+    starsName: 'Любимая',
+    // Сколько миллисекунд показывать имя после сборки
+    starsHoldTime: 2500,
+    // Плотность частиц: меньше = быстрее загрузка, но менее чёткий текст
+    // 4 — очень плотно (медленнее), 6 — баланс, 8 — быстро но разряженно
+    starsGap: 5,
+
+    // ============ 💌 ТАЙНОЕ ПИСЬМО ============
+    // Текст, который "печатается" после нажатия на восковую печать.
+    // Переносы строки — через \n. Пиши медленно, с душой.
+    secretLetter:
+        `Знаешь, что я понял за всё это время?\n\n` +
+        `Что любовь — это не громкие слова и не красивые жесты. Это мелочи.\n\n` +
+        `Это когда я вижу что-то смешное и первым делом хочу показать тебе. ` +
+        `Когда просыпаюсь раньше — и просто смотрю, как ты спишь. ` +
+        `Когда ловлю себя на том, что улыбаюсь, вспоминая твой голос.\n\n` +
+        `Я не знаю, что будет завтра. Но я точно знаю одно: ` +
+        `я хочу, чтобы все мои "завтра" были с тобой.`,
 
     // ============ QR-КОД ============
-    // Что зашифровать. Идеи:
-    //   • ссылка на YouTube-видео с твоим признанием
-    //   • ссылка на общий плейлист
-    //   • ссылка на папку с фото
-    //   • просто текст
-        // Путь к твоему QR-коду (файл в папке qr/)
-    qrImage: 'qr.jpeg',
+    qrImage: 'qr/qr-code.png',
     qrLabel: 'наведи камеру 📷',
 
     // ============ ПРИЧИНЫ ДНЯ ============
-    // Показывается по одной в день. Замени на СВОИ причины —
-    // конкретные, личные, про неё. Чем больше — тем лучше.
     dailyReasons: [
         'за то, как ты улыбаешься, когда думаешь, что я не вижу',
         'за твой смех — самый красивый звук в моей жизни',
@@ -55,6 +67,10 @@ const CONFIG = {
         'за все наши «завтра», которые мы ещё проживём вместе',
     ],
 
+    // ============ СЕКРЕТНОЕ СЕРДЦЕ ============
+    secretTaps: 7,
+    secretMessage: 'Значит, ты дошла до конца. P.S. посмотри под подушкой 💌',
+
     // ============ БИТ-ДЕТЕКТОР ============
     beatThreshold: 1.4,
     beatMinInterval: 200,
@@ -63,6 +79,241 @@ const CONFIG = {
 const $ = (sel) => document.querySelector(sel);
 const $$ = (sel) => document.querySelectorAll(sel);
 const vibrate = (ms = 8) => navigator.vibrate?.(ms);
+
+/* ============================================
+   🌟 ИМЯ ИЗ ЗВЁЗД
+   ============================================ */
+(function initStarsName() {
+    const screen = $('#stars-name-screen');
+    const canvas = $('#stars-name-canvas');
+    const skip = $('#stars-skip');
+    if (!screen || !canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    let W, H;
+
+    function resize() {
+        W = window.innerWidth;
+        H = window.innerHeight;
+        canvas.width = W * dpr;
+        canvas.height = H * dpr;
+        canvas.style.width = W + 'px';
+        canvas.style.height = H + 'px';
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+    resize();
+
+    // ==== 1. Определяем размер шрифта, чтобы имя влезло ====
+    function fitFontSize(text) {
+        const maxW = W * 0.85;
+        let size = Math.min(W * 0.18, 130);
+        ctx.font = `600 ${size}px 'Cormorant Garamond', Georgia, serif`;
+        while (ctx.measureText(text).width > maxW && size > 24) {
+            size -= 2;
+            ctx.font = `600 ${size}px 'Cormorant Garamond', Georgia, serif`;
+        }
+        return size;
+    }
+
+    // ==== 2. Сэмплируем точки из текста ====
+    function samplePoints(text, fontSize) {
+        const off = document.createElement('canvas');
+        off.width = W * dpr;
+        off.height = H * dpr;
+        const octx = off.getContext('2d');
+        octx.scale(dpr, dpr);
+        octx.fillStyle = '#fff';
+        octx.font = `600 ${fontSize}px 'Cormorant Garamond', Georgia, serif`;
+        octx.textAlign = 'center';
+        octx.textBaseline = 'middle';
+        octx.fillText(text, W / 2, H / 2);
+
+        const img = octx.getImageData(0, 0, off.width, off.height);
+        const data = img.data;
+        const points = [];
+        const gap = CONFIG.starsGap;
+
+        for (let y = 0; y < H; y += gap) {
+            for (let x = 0; x < W; x += gap) {
+                const px = Math.floor(x * dpr);
+                const py = Math.floor(y * dpr);
+                const idx = (py * off.width + px) * 4;
+                if (data[idx + 3] > 128) {
+                    points.push({ x, y });
+                }
+            }
+        }
+        return points;
+    }
+
+    const fontSize = fitFontSize(CONFIG.starsName);
+    const targetPoints = samplePoints(CONFIG.starsName, fontSize);
+
+    // ==== 3. Создаём частицы ====
+    const particles = targetPoints.map((pt) => {
+        // Начальная позиция — случайно по экрану
+        const angle = Math.random() * Math.PI * 2;
+        const radius = Math.max(W, H) * 0.6;
+        return {
+            x: W / 2 + Math.cos(angle) * radius * Math.random(),
+            y: H / 2 + Math.sin(angle) * radius * Math.random(),
+            tx: pt.x,
+            ty: pt.y,
+            sx: W / 2 + Math.cos(angle) * radius * Math.random(),
+            sy: H / 2 + Math.sin(angle) * radius * Math.random(),
+            r: Math.random() * 1.4 + 0.6,
+            phase: Math.random() * Math.PI * 2,
+            twinkle: Math.random() * 0.5 + 0.5,
+        };
+    });
+
+    // ==== 4. Фазы анимации ====
+    const PHASE = {
+        CHAOS: 0,
+        GATHER: 1,
+        HOLD: 2,
+        EXPLODE: 3,
+        DONE: 4,
+    };
+    let phase = PHASE.CHAOS;
+    let phaseStart = performance.now();
+    let exploded = false;
+
+    const CHAOS_DURATION = 1400;
+    const GATHER_DURATION = 1800;
+    const EXPLODE_DURATION = 1500;
+
+    let holdEnd = null;
+
+    function easeOutQuart(t) {
+        return 1 - Math.pow(1 - t, 4);
+    }
+
+    function render(now) {
+        const elapsed = now - phaseStart;
+        ctx.clearRect(0, 0, W, H);
+
+        // Переходы фаз
+        if (phase === PHASE.CHAOS && elapsed >= CHAOS_DURATION) {
+            phase = PHASE.GATHER;
+            phaseStart = now;
+        } else if (phase === PHASE.GATHER && elapsed >= GATHER_DURATION) {
+            phase = PHASE.HOLD;
+            phaseStart = now;
+            holdEnd = now + CONFIG.starsHoldTime;
+        } else if (phase === PHASE.HOLD && now >= holdEnd && !exploded) {
+            phase = PHASE.EXPLODE;
+            phaseStart = now;
+            exploded = true;
+            // Перенаправляем точки в случайные стороны
+            particles.forEach((p) => {
+                const angle = Math.atan2(p.y - H / 2, p.x - W / 2) + (Math.random() - 0.5) * 0.8;
+                const speed = Math.random() * 600 + 400;
+                p.sx = p.tx;
+                p.sy = p.ty;
+                p.tx = p.tx + Math.cos(angle) * speed;
+                p.ty = p.ty + Math.sin(angle) * speed;
+            });
+        } else if (phase === PHASE.EXPLODE && elapsed >= EXPLODE_DURATION) {
+            phase = PHASE.DONE;
+        }
+
+        // Рисуем
+        const t = now * 0.001;
+        particles.forEach((p) => {
+            let progress = 0;
+
+            if (phase === PHASE.CHAOS) {
+                // Хаос — свободное движение
+                p.x += Math.cos(t + p.phase) * 0.4;
+                p.y += Math.sin(t + p.phase * 1.3) * 0.4;
+            } else if (phase === PHASE.GATHER) {
+                progress = Math.min(1, elapsed / GATHER_DURATION);
+                const eased = easeOutQuart(progress);
+                p.x = p.sx + (p.tx - p.sx) * eased;
+                p.y = p.sy + (p.ty - p.sy) * eased;
+            } else if (phase === PHASE.HOLD) {
+                p.x = p.tx;
+                p.y = p.ty;
+            } else if (phase === PHASE.EXPLODE) {
+                progress = Math.min(1, elapsed / EXPLODE_DURATION);
+                const eased = easeOutQuart(progress);
+                p.x = p.sx + (p.tx - p.sx) * eased;
+                p.y = p.sy + (p.ty - p.sy) * eased;
+            } else if (phase === PHASE.DONE) {
+                return;
+            }
+
+            const twinkle = 0.5 + 0.5 * Math.sin(t * 2 + p.phase);
+            let alpha = 0.4 + 0.6 * twinkle;
+            if (phase === PHASE.EXPLODE) {
+                alpha *= (1 - progress);
+            }
+
+            // Свечение
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.r + 2, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(216, 149, 152, ${alpha * 0.15})`;
+            ctx.fill();
+
+            // Ядро
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(255, 230, 220, ${alpha})`;
+            ctx.fill();
+        });
+
+        if (phase !== PHASE.DONE) {
+            requestAnimationFrame(render);
+        } else {
+            // Финал — экран уходит
+            finishNameScreen();
+        }
+    }
+
+    let finished = false;
+    function finishNameScreen() {
+        if (finished) return;
+        finished = true;
+        screen.classList.add('gone');
+    }
+
+    // Клик = пропуск
+    function skipNow() {
+        if (finished) return;
+        // Быстрый переход к финалу — рассыпаем и уходим
+        if (phase !== PHASE.EXPLODE && phase !== PHASE.DONE) {
+            phase = PHASE.EXPLODE;
+            phaseStart = performance.now();
+            exploded = true;
+            particles.forEach((p) => {
+                const angle = Math.atan2(p.y - H / 2, p.x - W / 2) + (Math.random() - 0.5) * 0.8;
+                const speed = Math.random() * 800 + 500;
+                p.sx = p.x;
+                p.sy = p.y;
+                p.tx = p.x + Math.cos(angle) * speed;
+                p.ty = p.y + Math.sin(angle) * speed;
+            });
+        }
+    }
+
+    screen.addEventListener('click', skipNow);
+    screen.addEventListener('touchstart', skipNow, { passive: true });
+
+    // Запуск
+    requestAnimationFrame(render);
+
+    // Резервный таймер — если что-то пойдёт не так, экран всё равно уйдёт
+    setTimeout(() => {
+        finishNameScreen();
+    }, 12000);
+
+    window.addEventListener('resize', () => {
+        // На resize — сразу уходим, чтобы не ломать вёрстку
+        if (!finished) finishNameScreen();
+    });
+})();
 
 /* ============================================
    ПЫЛИНКИ
@@ -358,6 +609,90 @@ window.addEventListener('scroll', () => {
 }, { passive: true });
 
 /* ============================================
+   💌 ТАЙНОЕ ПИСЬМО — печатная машинка
+   ============================================ */
+(function initSecretLetter() {
+    const seal = $('#letter-seal');
+    const sealWrap = $('#letter-seal-wrap');
+    const paper = $('#letter-paper');
+    const typedEl = $('#typed-text');
+    const cursor = $('#typed-cursor');
+    if (!seal || !paper || !typedEl) return;
+
+    let started = false;
+
+    function delayFor(char, prevChar, nextChar) {
+        // Базовые паузы
+        let d = 30 + Math.random() * 35;
+
+        if (char === '.') {
+            // Троеточие
+            if (nextChar === '.' || prevChar === '.') d = 200;
+            else d = 750;
+        } else if (char === ',') {
+            d = 320;
+        } else if (char === '!' || char === '?') {
+            d = 600;
+        } else if (char === '—' || char === '–' || char === '-') {
+            d = 220;
+        } else if (char === '\n') {
+            d = 550;
+        } else if (char === ' ') {
+            d = 25 + Math.random() * 20;
+        }
+
+        // После "…" или "..." — длинная пауза
+        return d;
+    }
+
+    function typeLetter(text) {
+        let i = 0;
+        function tick() {
+            if (i >= text.length) {
+                // Оставляем курсор мигать 2 секунды и убираем
+                setTimeout(() => {
+                    if (cursor) cursor.style.display = 'none';
+                }, 2000);
+                return;
+            }
+
+            const char = text[i];
+            const prev = i > 0 ? text[i - 1] : '';
+            const next = i + 1 < text.length ? text[i + 1] : '';
+            typedEl.textContent += char;
+            i++;
+
+            // Спец-пауза после "…"
+            if (char === '.' && prev === '.' && next === '.') {
+                setTimeout(tick, 900);
+                return;
+            }
+
+            setTimeout(tick, delayFor(char, prev, next));
+        }
+        // Первая пауза — письмо "раскрывается" перед печатью
+        setTimeout(tick, 500);
+    }
+
+    seal.addEventListener('click', () => {
+        if (started) return;
+        started = true;
+        vibrate([25, 60, 25]);
+
+        seal.classList.add('cracking');
+
+        setTimeout(() => {
+            sealWrap.classList.add('gone');
+            setTimeout(() => {
+                sealWrap.style.display = 'none';
+                paper.hidden = false;
+                typeLetter(CONFIG.secretLetter);
+            }, 500);
+        }, 750);
+    });
+})();
+
+/* ============================================
    ЛАЙТБОКС
    ============================================ */
 const lightbox = $('#lightbox');
@@ -431,7 +766,7 @@ secretHeart.addEventListener('click', () => {
 });
 
 /* ============================================
-   QR-КОД — показ после раскрытия сердца
+   QR-КОД
    ============================================ */
 function revealQR() {
     const wrapper = $('#qr-wrapper');
@@ -439,10 +774,7 @@ function revealQR() {
     const label = $('#qr-label');
     if (!wrapper || !img) return;
 
-    if (!CONFIG.qrImage) {
-        console.warn('qrImage не задан в CONFIG');
-        return;
-    }
+    if (!CONFIG.qrImage) return;
 
     img.src = CONFIG.qrImage;
     img.alt = 'QR-код';
@@ -459,6 +791,7 @@ function revealQR() {
         wrapper.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }, 700);
 }
+
 /* ============================================
    ПРИЧИНА ДНЯ
    ============================================ */
@@ -487,7 +820,7 @@ setDailyReason();
 setInterval(setDailyReason, 60000);
 
 /* ============================================
-   ЗАГОЛОВОК ВКЛАДКИ — при уходе/возврате
+   ЗАГОЛОВОК ВКЛАДКИ
    ============================================ */
 const originalTitle = document.title;
 document.addEventListener('visibilitychange', () => {
@@ -502,6 +835,6 @@ document.addEventListener('visibilitychange', () => {
 /* ============================================
    ВИБРАЦИЯ
    ============================================ */
-$$('.music-btn, .photo-item, .promise, .chapter-title').forEach((el) => {
+$$('.music-btn, .photo-item, .promise, .chapter-title, .letter-seal, .secret-heart').forEach((el) => {
     el.addEventListener('touchstart', () => vibrate(5), { passive: true });
 });
