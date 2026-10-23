@@ -6,8 +6,8 @@ const CONFIG = {
     startDate: '2023-06-15T18:00:00',
     music: 'prince.mp3',
     musicVolume: 0.35,
-    secretTaps: 7,
-    secretMessage: 'Значит, ты дошла до конца. P.S. посмотри под подушкой 💌',
+    secretTaps: 3,
+    secretMessage: 'Значит, ты дошла до конца.',
 
     // Бит-детектор
     beatThreshold: 1.4,
