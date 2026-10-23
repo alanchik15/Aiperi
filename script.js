@@ -15,7 +15,8 @@ const CONFIG = {
     //   • ссылка на общий плейлист
     //   • ссылка на папку с фото
     //   • просто текст
-    qrContent: 'https://youtu.be/dQw4w9WgXcQ',
+        // Путь к твоему QR-коду (файл в папке qr/)
+    qrImage: 'qr/qr-code.png',
     qrLabel: 'наведи камеру 📷',
 
     // ============ ПРИЧИНЫ ДНЯ ============
@@ -438,20 +439,16 @@ function revealQR() {
     const label = $('#qr-label');
     if (!wrapper || !img) return;
 
-    if (!CONFIG.qrContent) {
-        console.warn('qrContent не задан в CONFIG — QR не покажется');
+    if (!CONFIG.qrImage) {
+        console.warn('qrImage не задан в CONFIG');
         return;
     }
 
-    const data = encodeURIComponent(CONFIG.qrContent);
-    const src = `https://api.qrserver.com/v1/create-qr-code/?size=400x400&margin=10&data=${data}`;
-
-    img.src = src;
+    img.src = CONFIG.qrImage;
     img.alt = 'QR-код';
-
     img.onerror = () => {
-        console.warn('QR-сервис недоступен');
-        if (label) label.textContent = 'не удалось загрузить QR';
+        console.warn('QR-картинка не нашлась по пути:', CONFIG.qrImage);
+        if (label) label.textContent = 'QR не найден';
     };
 
     if (label) label.textContent = CONFIG.qrLabel;
@@ -462,7 +459,6 @@ function revealQR() {
         wrapper.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }, 700);
 }
-
 /* ============================================
    ПРИЧИНА ДНЯ
    ============================================ */
