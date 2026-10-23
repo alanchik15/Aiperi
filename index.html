@@ -93,20 +93,20 @@
 
             <div class="photo-wall">
                 <figure class="photo-item reveal" data-src="photos/photo1.jpg" data-caption="тот самый день">
-                    <img src="aiperi.jpeg" alt="" loading="lazy">
-                    <figcaption class="handwritten">твоя красота</figcaption>
+                    <img src="photos/photo1.jpg" alt="" loading="lazy">
+                    <figcaption class="handwritten">тот самый день</figcaption>
                 </figure>
                 <figure class="photo-item reveal" data-src="photos/photo2.jpg" data-caption="когда ты смеялась">
-                    <img src="beatiful.jpeg" alt="" loading="lazy">
-                    <figcaption class="handwritten">любовь моя</figcaption>
+                    <img src="photos/photo2.jpg" alt="" loading="lazy">
+                    <figcaption class="handwritten">когда ты смеялась</figcaption>
                 </figure>
                 <figure class="photo-item reveal" data-src="photos/photo3.jpg" data-caption="наш закат">
-                    <img src="love.jpeg" alt="" loading="lazy">
-                    <figcaption class="handwritten">покорён твоей красотой</figcaption>
+                    <img src="photos/photo3.jpg" alt="" loading="lazy">
+                    <figcaption class="handwritten">наш закат</figcaption>
                 </figure>
                 <figure class="photo-item reveal" data-src="photos/photo4.jpg" data-caption="самый любимый">
-                    <img src="cute.jpeg" alt="" loading="lazy">
-                    <figcaption class="handwritten">милая моя</figcaption>
+                    <img src="photos/photo4.jpg" alt="" loading="lazy">
+                    <figcaption class="handwritten">самый любимый</figcaption>
                 </figure>
             </div>
         </section>
@@ -134,6 +134,18 @@
             </ul>
         </section>
 
+        <section class="chapter chapter-daily">
+            <span class="chapter-num reveal">V</span>
+            <h2 class="chapter-title reveal">Причина дня</h2>
+            <p class="chapter-body reveal">
+                Каждый день у меня новая причина любить тебя.
+                Возвращайся сюда завтра — будет другая.
+            </p>
+            <div class="daily-card reveal">
+                <p class="daily-text handwritten" id="daily-reason"></p>
+            </div>
+        </section>
+
         <section class="chapter chapter-finale">
             <p class="finale-lead handwritten reveal">и самое главное...</p>
             <h2 class="finale-title reveal">Я люблю тебя</h2>
@@ -147,6 +159,13 @@
                 <span class="heart-char">❤</span>
             </button>
             <p class="secret-hint handwritten" id="secret-hint">коснись сердца...</p>
+
+            <div class="qr-wrapper" id="qr-wrapper" aria-hidden="true">
+                <div class="qr-frame">
+                    <img id="qr-code" class="qr-code" alt="QR-код">
+                </div>
+                <p class="qr-label handwritten" id="qr-label"></p>
+            </div>
 
             <p class="signature handwritten reveal">твой навсегда</p>
         </section>
