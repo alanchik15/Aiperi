@@ -70,47 +70,7 @@ canvas#dust {
 }
 
 /* ============================================
-   СЛОЙ С ТЕКСТОМ ПЕСНИ
-   ============================================ */
-.lyrics-layer {
-    position: fixed;
-    inset: 0;
-    z-index: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    pointer-events: none;
-    padding: 14vh 8vw;
-    overflow: hidden;
-}
-
-.lyric-line {
-    font-family: var(--font-serif);
-    font-size: clamp(2rem, 10vw, 3.4rem);
-    font-weight: 300;
-    font-style: italic;
-    text-align: center;
-    line-height: 1.15;
-    letter-spacing: -0.015em;
-    color: rgba(240, 200, 180, 0.22);
-    filter: blur(2.5px);
-    text-shadow: 0 0 60px rgba(216, 149, 152, 0.18);
-    opacity: 0;
-    transform: scale(0.94) translateY(12px);
-    transition: opacity 1.4s var(--ease), transform 1.6s var(--ease);
-    max-width: 92vw;
-    will-change: opacity, transform, filter;
-    -webkit-user-select: none;
-    user-select: none;
-}
-
-.lyric-line.show {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-}
-
-/* ============================================
-   BEAT GLOW — фоновое свечение в такт битам
+   BEAT GLOW — свечение в такт битам
    ============================================ */
 .beat-glow {
     position: fixed;
