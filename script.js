@@ -3,7 +3,7 @@
    ============================================ */
 const CONFIG = {
     herName: 'Любимая',
-    startDate: '2023-06-15T18:00:00',
+    startDate: '2026-07-18T18:00:00',
     music: 'prince.mp3',
     musicVolume: 0.35,
     secretTaps: 3,
