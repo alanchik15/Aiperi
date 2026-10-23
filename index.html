@@ -12,23 +12,14 @@
 </head>
 <body class="locked">
 
-    <!-- Пылинки -->
     <canvas id="dust" aria-hidden="true"></canvas>
 
-    <!-- Слой со словами песни (за письмом) -->
-    <div class="lyrics-layer" id="lyrics-layer" aria-hidden="true">
-        <p class="lyric-line" id="lyric-line"></p>
-    </div>
-
-    <!-- Фоновое свечение, пульсирующее в такт битам -->
     <div class="beat-glow" id="beat-glow" aria-hidden="true"></div>
 
-    <!-- Прогресс чтения -->
     <div class="progress-line" aria-hidden="true">
         <div class="progress-fill" id="progress-fill"></div>
     </div>
 
-    <!-- ===================== КОНВЕРТ ===================== -->
     <section class="envelope-screen" id="envelope-screen">
         <div class="envelope" id="envelope" role="button" tabindex="0" aria-label="Открыть письмо">
             <div class="env-back"></div>
@@ -40,7 +31,6 @@
         <p class="envelope-hint">коснись конверта</p>
     </section>
 
-    <!-- ===================== МУЗЫКА ===================== -->
     <button class="music-btn" id="music-btn" aria-label="Управление музыкой">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
             <path d="M9 18V5l12-2v13" stroke-linecap="round" stroke-linejoin="round"/>
@@ -50,7 +40,6 @@
     </button>
     <audio id="music" loop preload="none" crossorigin="anonymous"></audio>
 
-    <!-- ===================== ПИСЬМО ===================== -->
     <main class="letter" id="letter">
 
         <section class="chapter chapter-open">
@@ -164,7 +153,6 @@
 
     </main>
 
-    <!-- ===================== ЛАЙТБОКС ===================== -->
     <div class="lightbox" id="lightbox" aria-hidden="true">
         <button class="lb-close" id="lb-close" aria-label="Закрыть">×</button>
         <div class="lb-inner">
