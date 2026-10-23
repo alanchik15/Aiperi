@@ -87,17 +87,38 @@ body.locked {
 
 .stars-skip {
     position: absolute;
-    bottom: 2rem;
-    left: 50%;
-    transform: translateX(-50%);
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 1.5rem);
+    right: 1.5rem;
     font-family: var(--font-hand);
     font-size: 1rem;
     color: var(--cream-muted);
-    opacity: 0.5;
     letter-spacing: 0.5px;
-    animation: hintFade 3s ease-in-out infinite;
-    pointer-events: none;
+    background: rgba(36, 22, 32, 0.5);
+    border: 1px solid rgba(216, 149, 152, 0.25);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    cursor: pointer;
+    opacity: 0;
+    animation: skipFadeIn 0.8s ease 2s forwards;
     white-space: nowrap;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-appearance: none;
+    appearance: none;
+    z-index: 2;
+}
+
+.stars-skip:active {
+    transform: scale(0.95);
+    background: rgba(216, 149, 152, 0.2);
+}
+
+@keyframes skipFadeIn {
+    from { opacity: 0; }
+    to { opacity: 0.7; }
 }
 
 /* ============================================
@@ -694,7 +715,7 @@ canvas#dust {
 .daily-text.fade { opacity: 0; }
 
 /* ============================================
-   💌 ТАЙНОЕ ПИСЬМО (печатная машинка)
+   💌 ТАЙНОЕ ПИСЬМО
    ============================================ */
 .chapter-letter {
     min-height: 100dvh;
@@ -742,6 +763,8 @@ canvas#dust {
     position: relative;
     -webkit-user-select: none;
     user-select: none;
+    -webkit-appearance: none;
+    appearance: none;
 }
 
 .letter-seal::before {
@@ -797,11 +820,14 @@ canvas#dust {
     line-height: 1.5;
 }
 
+.letter-paper[hidden] {
+    display: none !important;
+}
+
 .letter-paper {
     max-width: 100%;
     width: 100%;
-    background:
-        linear-gradient(170deg, #f8f0e2 0%, #ece0ce 100%);
+    background: linear-gradient(170deg, #f8f0e2 0%, #ece0ce 100%);
     padding: 2.5rem 1.75rem 2.25rem;
     border-radius: 4px;
     box-shadow:
@@ -933,6 +959,8 @@ canvas#dust {
         inset 0 0 20px rgba(168, 40, 60, 0.15);
     -webkit-user-select: none;
     user-select: none;
+    -webkit-appearance: none;
+    appearance: none;
 }
 
 .secret-heart:active {
@@ -1174,6 +1202,7 @@ canvas#dust {
     .letter { max-width: 480px; padding: 0 2rem; }
     .photo-item { width: 72%; }
     .letter-paper { padding: 3rem 2.5rem 2.5rem; }
+    .stars-skip { bottom: 2.5rem; right: 2.5rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1184,10 +1213,12 @@ canvas#dust {
         scroll-behavior: auto !important;
     }
     .reveal { opacity: 1; transform: none; }
+    .stars-skip { opacity: 0.7; animation: none; }
 }
 
 button:focus-visible,
-.envelope:focus-visible {
+.envelope:focus-visible,
+.stars-skip:focus-visible {
     outline: 2px solid var(--rose);
     outline-offset: 4px;
 }
