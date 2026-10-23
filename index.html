@@ -7,10 +7,16 @@
     <title>Для тебя</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Caveat:wght@400;600;700&family=Lora:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Caveat:wght@400;600;700&family=Lora:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body class="locked">
+
+    <!-- 🌟 ЭКРАН С ИМЕНЕМ ИЗ ЗВЁЗД -->
+    <div class="stars-name-screen" id="stars-name-screen">
+        <canvas id="stars-name-canvas"></canvas>
+        <p class="stars-skip handwritten" id="stars-skip">коснись, чтобы пропустить</p>
+    </div>
 
     <canvas id="dust" aria-hidden="true"></canvas>
 
@@ -56,7 +62,7 @@
             <p class="counter-label handwritten reveal">с того самого дня прошло</p>
             <div class="counter-grid reveal">
                 <div class="counter-item">
-                    <span class="counter-value" id="c-days">00</span>
+                    <span class="counter-value" id="c-days">0</span>
                     <span class="counter-unit">дней</span>
                 </div>
                 <div class="counter-item">
@@ -93,20 +99,20 @@
 
             <div class="photo-wall">
                 <figure class="photo-item reveal" data-src="photos/photo1.jpg" data-caption="тот самый день">
-                    <img src="beatiful.jpeg" alt="" loading="lazy">
-                    <figcaption class="handwritten">моя ты</figcaption>
+                    <img src="photos/photo1.jpg" alt="" loading="lazy">
+                    <figcaption class="handwritten">тот самый день</figcaption>
                 </figure>
                 <figure class="photo-item reveal" data-src="photos/photo2.jpg" data-caption="когда ты смеялась">
-                    <img src="cute.jpeg" alt="" loading="lazy">
-                    <figcaption class="handwritten">милая моя</figcaption>
+                    <img src="photos/photo2.jpg" alt="" loading="lazy">
+                    <figcaption class="handwritten">когда ты смеялась</figcaption>
                 </figure>
                 <figure class="photo-item reveal" data-src="photos/photo3.jpg" data-caption="наш закат">
-                    <img src="love.jpeg" alt="" loading="lazy">
-                    <figcaption class="handwritten">покорён тобой</figcaption>
+                    <img src="photos/photo3.jpg" alt="" loading="lazy">
+                    <figcaption class="handwritten">наш закат</figcaption>
                 </figure>
                 <figure class="photo-item reveal" data-src="photos/photo4.jpg" data-caption="самый любимый">
-                    <img src="aiperi.jpeg" alt="" loading="lazy">
-                    <figcaption class="handwritten">я навсегда</figcaption>
+                    <img src="photos/photo4.jpg" alt="" loading="lazy">
+                    <figcaption class="handwritten">самый любимый</figcaption>
                 </figure>
             </div>
         </section>
@@ -143,6 +149,19 @@
             </p>
             <div class="daily-card reveal">
                 <p class="daily-text handwritten" id="daily-reason"></p>
+            </div>
+        </section>
+
+        <!-- 💌 ТАЙНОЕ ПИСЬМО -->
+        <section class="chapter chapter-letter">
+            <div class="letter-seal-wrap" id="letter-seal-wrap">
+                <button class="letter-seal" id="letter-seal" aria-label="Открыть тайное письмо">
+                    <span class="letter-seal-icon">✉</span>
+                </button>
+                <p class="letter-seal-hint handwritten">здесь то, что я не смог сказать вслух</p>
+            </div>
+            <div class="letter-paper" id="letter-paper" hidden>
+                <p class="typed-text" id="typed-text"></p><span class="typed-cursor" id="typed-cursor"></span>
             </div>
         </section>
 
