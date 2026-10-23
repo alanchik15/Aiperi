@@ -1,86 +1,16 @@
 /* ============================================
-   КОНФИГ — меняй здесь
+   КОНФИГ
    ============================================ */
 const CONFIG = {
     herName: 'Любимая',
     startDate: '2023-06-15T18:00:00',
-    music: 'prince.mp3',
+    music: 'music/song.mp3',
     musicVolume: 0.35,
     secretTaps: 7,
     secretMessage: 'Значит, ты дошла до конца. P.S. посмотри под подушкой 💌',
 
-    // ============ ТЕКСТ ПЕСНИ ============
-    // time — секунда, когда строка должна появиться
-    // text — сама строка
-    lyrics: [
-    // ── Куплет 1 ──
-    { time: 123.0,  text: 'В голове монотон, утопила мечты.' },
-    { time: 27.0, text: 'Промелькнула, как сон мимо моей звезды.' },
-    { time: 31.0, text: 'Обездвиженный дом, поливаю цветы.' },
-    { time: 34.0, text: 'Уходя — уходи (уходи, уходи).' },
-
-    // ── Пре-хорус ──
-    { time: 39.0, text: 'В этих недельных запоях я потерял себя, кто я?' },
-    { time: 45.0, text: 'Любовь и ненависть ноет. Может, ты нервно больная, но' },
-    { time: 49.0, text: 'Все апплодируют стоя, им до нас дело какое?' },
-    { time: 53.0, text: 'Я один, или мы двое, кажется, всё паранойя.' },
-
-    // ── Припев 1 ──
-    { time: 58.0, text: 'Пусто, почему так пусто?' },
-    { time: 101.0, text: 'Я забуду все твои контакты, Direct\'ы, WhatsApp\'ы.' },
-    { time: 46.5, text: 'Выбросила чувства. Ох, уж эти чувства.' },
-    { time: 50.0, text: 'Хочешь — ненавидь меня, но сына поцелуй от папы.' },
-
-    // ── Припев 2 (повтор) ──
-    { time: 53.5, text: 'Пусто, почему так пусто?' },
-    { time: 56.5, text: 'Я забуду все твои контакты, Direct\'ы, WhatsApp\'ы.' },
-    { time: 60.0, text: 'Выбросила чувства. Ох, уж эти чувства.' },
-    { time: 63.5, text: 'Хочешь — ненавидь меня, но сына поцелуй от папы.' },
-
-    // ── Куплет 2 (повтор) ──
-    { time: 67.0, text: 'В голове монотон, утопила мечты.' },
-    { time: 71.0, text: 'Промелькнула, как сон мимо моей звезды.' },
-    { time: 75.0, text: 'Обездвиженный дом, поливаю цветы.' },
-    { time: 79.0, text: 'Уходя — уходи (уходи, уходи).' },
-
-    // ── Бридж (mommy) ──
-    { time: 83.0,  text: 'Одна любовь, mommy —' },
-    { time: 87.0,  text: 'А ты безмерно выпиваешь мою кровь, mommy.' },
-    { time: 91.0,  text: 'Прошлась по нервам. Хватит! Ты не пустословь, mommy.' },
-    { time: 95.0,  text: 'И я безжалостно вливаю в себя вновь, mommy.' },
-    { time: 99.0,  text: 'Одна любовь, mommy.' },
-    { time: 102.0, text: 'Одна любовь, mommy.' },
-    { time: 105.5, text: 'Глаза не прячь, я вижу всю тебя насквозь, mommy.' },
-    { time: 109.5, text: 'Нам эту сказку сохранить не удалось, mommy.' },
-    { time: 113.5, text: 'Сожги, сотри, забудь, забей, выкинь и брось, mommy.' },
-    { time: 117.5, text: 'Не удалось, mommy.' },
-
-    // ── Припев 3 (обрезанный) ──
-    { time: 121.0, text: 'Пусто, почему так пусто?' },
-    { time: 124.0, text: 'Я забуду все твои контакты, Direct\'ы, WhatsApp\'ы.' },
-    { time: 127.5, text: 'Выбросила чувства. Ох, уж эти чувства.' },
-    { time: 131.0, text: 'Хочешь — ненавидь меня, но сына...' },
-
-    // ── Финальный куплет ──
-    { time: 135.0, text: 'В голове монотон, утопила мечты.' },
-    { time: 139.0, text: 'Промелькнула, как сон мимо моей звезды.' },
-    { time: 143.0, text: 'Обездвиженный дом, поливаю цветы.' },
-    { time: 147.0, text: 'Уходя — уходи (уходи, уходи).' },
-
-    // ── Финал (повтор) ──
-    { time: 151.0, text: 'В голове монотон, утопила мечты.' },
-    { time: 155.0, text: 'Промелькнула, как сон мимо моей звезды.' },
-    { time: 159.0, text: 'Обездвиженный дом, поливаю цветы.' },
-    { time: 163.0, text: 'Уходя — уходи (уходи, уходи).' },
-],
-
-    // ============ НАСТРОЙКИ БИТ-ДЕТЕКТОРА ============
-    // threshold — во сколько раз энергия баса должна превысить среднюю
-    //             1.2 = чувствительный (много пульсов)
-    //             1.5 = сбалансированный (по умолчанию)
-    //             1.8 = строгий (только сильные биты)
+    // Бит-детектор
     beatThreshold: 1.4,
-    // Минимальный интервал между битами (мс) — защита от двойных срабатываний
     beatMinInterval: 200,
 };
 
@@ -187,7 +117,7 @@ const beatState = {
     average: 0,
     samples: 0,
     lastBeat: 0,
-    pulse: 0, // 0..1 — плавно затухающая величина
+    pulse: 0,
 };
 
 function initAnalyser() {
@@ -205,27 +135,20 @@ function initAnalyser() {
         dataArray = new Uint8Array(analyser.frequencyBinCount);
         return true;
     } catch (e) {
-        console.warn('Не удалось подключить анализатор (запускай сайт через http-сервер):', e);
-        // Пробуем перенаправить звук обратно на выход, если sourceNode создался
-        try {
-            if (sourceNode) sourceNode.connect(audioCtx.destination);
-        } catch {}
+        console.warn('Анализатор не подключился:', e);
+        try { if (sourceNode) sourceNode.connect(audioCtx.destination); } catch {}
         return false;
     }
 }
 
-// Детектор бита
 function detectBeat() {
     if (!analyser || !dataArray) return 0;
-
     analyser.getByteFrequencyData(dataArray);
 
-    // Берём бас-диапазон (бины 0..5 ≈ 0-350Гц — там живут бочка и бас)
     let bass = 0;
     for (let i = 0; i < 6; i++) bass += dataArray[i];
     bass /= 6;
 
-    // Экспоненциальное среднее — накапливаем «типичную» громкость баса
     if (beatState.samples < 40) {
         beatState.average = (beatState.average * beatState.samples + bass) / (beatState.samples + 1);
         beatState.samples++;
@@ -236,53 +159,28 @@ function detectBeat() {
     const now = performance.now();
     const threshold = beatState.average * CONFIG.beatThreshold;
 
-    // Бит = резкий скачок баса выше среднего + минимальный интервал + не тишина
-    if (
-        bass > threshold &&
-        bass > 45 &&
-        now - beatState.lastBeat > CONFIG.beatMinInterval
-    ) {
+    if (bass > threshold && bass > 45 && now - beatState.lastBeat > CONFIG.beatMinInterval) {
         beatState.lastBeat = now;
-        return Math.min(1, (bass - threshold) / 180 + 0.4); // 0.4..1
+        return Math.min(1, (bass - threshold) / 180 + 0.4);
     }
     return 0;
 }
 
-const lyricLine = $('#lyric-line');
 const beatGlow = $('#beat-glow');
 
 function pulseLoop() {
     if (!audio.paused) {
         const intensity = detectBeat();
-        if (intensity > beatState.pulse) {
-            beatState.pulse = intensity;
-        }
+        if (intensity > beatState.pulse) beatState.pulse = intensity;
     }
 
-    // Плавное затухание
     beatState.pulse *= 0.86;
     if (beatState.pulse < 0.01) beatState.pulse = 0;
 
     const p = beatState.pulse;
 
-    // Пульс строки текста
-    if (lyricLine && lyricLine.classList.contains('show')) {
-        const scale = 1 + p * 0.09;
-        const bright = 1 + p * 0.7;
-        const blur = Math.max(1.0, 2.5 - p * 1.5);
-        lyricLine.style.transform = `scale(${scale}) translateY(0)`;
-        lyricLine.style.filter = `blur(${blur}px) brightness(${bright})`;
-    } else if (lyricLine) {
-        lyricLine.style.transform = '';
-        lyricLine.style.filter = '';
-    }
+    if (beatGlow) beatGlow.style.opacity = (p * 0.55).toFixed(3);
 
-    // Фоновое свечение
-    if (beatGlow) {
-        beatGlow.style.opacity = (p * 0.55).toFixed(3);
-    }
-
-    // Свечение кнопки музыки
     if (musicBtn && !audio.paused) {
         musicBtn.style.boxShadow = `0 0 ${8 + p * 24}px rgba(216,149,152,${0.3 + p * 0.5})`;
     } else if (musicBtn) {
@@ -299,74 +197,6 @@ function startBeatLoop() {
 }
 
 /* ============================================
-   СИНХРОНИЗАЦИЯ ТЕКСТА ПЕСНИ
-   ============================================ */
-function initLyricsSync() {
-    if (!lyricLine || !CONFIG.lyrics.length) return;
-
-    let currentIdx = -1;
-    let lastTime = 0;
-
-    function findIdx(t) {
-        let idx = -1;
-        for (let i = 0; i < CONFIG.lyrics.length; i++) {
-            if (t >= CONFIG.lyrics[i].time) idx = i;
-            else break;
-        }
-        return idx;
-    }
-
-    function showLine(text) {
-        lyricLine.classList.remove('show');
-        setTimeout(() => {
-            lyricLine.textContent = text;
-            lyricLine.classList.add('show');
-        }, 180);
-    }
-
-    function tick() {
-        if (!audio.paused) {
-            const t = audio.currentTime;
-
-            if (t < lastTime - 1) {
-                currentIdx = -1;
-                lyricLine.classList.remove('show');
-            }
-            lastTime = t;
-
-            const idx = findIdx(t);
-            if (idx !== currentIdx) {
-                if (idx === -1) {
-                    lyricLine.classList.remove('show');
-                } else {
-                    showLine(CONFIG.lyrics[idx].text);
-                }
-                currentIdx = idx;
-            }
-        }
-        requestAnimationFrame(tick);
-    }
-
-    requestAnimationFrame(tick);
-
-    audio.addEventListener('pause', () => {
-        lyricLine.classList.remove('show');
-        beatGlow.style.opacity = 0;
-    });
-
-    audio.addEventListener('play', () => {
-        currentIdx = -1;
-        lastTime = audio.currentTime;
-    });
-
-    audio.addEventListener('seeked', () => {
-        currentIdx = -1;
-        lastTime = audio.currentTime;
-        lyricLine.classList.remove('show');
-    });
-}
-
-/* ============================================
    КОНВЕРТ
    ============================================ */
 const envelopeScreen = $('#envelope-screen');
@@ -380,19 +210,14 @@ async function openEnvelope() {
     vibrate(20);
     envelope.classList.add('opened');
 
-    // Инициализируем Web Audio (жест пользователя уже есть)
     const audioReady = initAnalyser();
     if (audioCtx && audioCtx.state === 'suspended') {
         try { await audioCtx.resume(); } catch {}
     }
 
-    // Запускаем воспроизведение
     await playMusic();
 
-    // Стартуем бит-детектор (если анализатор доступен)
-    if (audioReady && analyser) {
-        startBeatLoop();
-    }
+    if (audioReady && analyser) startBeatLoop();
 
     setTimeout(() => {
         envelopeScreen.classList.add('gone');
@@ -405,9 +230,6 @@ async function openEnvelope() {
             setTimeout(startReveals, 200);
         });
     }, 2000);
-
-    // Инициализируем синхронизацию текста песни
-    initLyricsSync();
 }
 
 envelope.addEventListener('click', openEnvelope);
