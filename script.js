@@ -69,7 +69,7 @@ const CONFIG = {
     ],
 
     // ============ СЕКРЕТНОЕ СЕРДЦЕ ============
-    secretTaps: 7,
+    secretTaps: 3,
     secretMessage: 'Yes yes i lve you',
 
     // ============ БИТ-ДЕТЕКТОР ============
