@@ -70,7 +70,7 @@ canvas#dust {
 }
 
 /* ============================================
-   BEAT GLOW — свечение в такт битам
+   BEAT GLOW
    ============================================ */
 .beat-glow {
     position: fixed;
@@ -584,6 +584,73 @@ canvas#dust {
 }
 
 /* ============================================
+   ПРИЧИНА ДНЯ
+   ============================================ */
+.chapter-daily {
+    text-align: center;
+}
+
+.chapter-daily .chapter-body {
+    text-align: center;
+    margin-bottom: 2.5rem;
+}
+
+.daily-card {
+    background: rgba(36, 22, 32, 0.55);
+    border: 1px solid rgba(216, 149, 152, 0.18);
+    border-radius: 20px;
+    padding: 2.2rem 1.75rem 2rem;
+    margin: 0 auto;
+    max-width: 400px;
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow:
+        0 15px 40px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.daily-card::before {
+    content: '“';
+    position: absolute;
+    top: -25px;
+    left: 10px;
+    font-family: var(--font-serif);
+    font-size: 7rem;
+    color: var(--rose);
+    opacity: 0.12;
+    line-height: 1;
+    pointer-events: none;
+}
+
+.daily-card::after {
+    content: '”';
+    position: absolute;
+    bottom: -55px;
+    right: 10px;
+    font-family: var(--font-serif);
+    font-size: 7rem;
+    color: var(--rose);
+    opacity: 0.12;
+    line-height: 1;
+    pointer-events: none;
+}
+
+.daily-text {
+    font-family: var(--font-hand);
+    font-size: 1.65rem;
+    color: var(--cream);
+    line-height: 1.4;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+    transition: opacity 0.4s ease;
+}
+
+.daily-text.fade { opacity: 0; }
+
+/* ============================================
    ФИНАЛ
    ============================================ */
 .chapter-finale {
@@ -689,7 +756,7 @@ canvas#dust {
     font-family: var(--font-hand);
     font-size: 1.15rem;
     color: var(--cream-muted);
-    margin-bottom: 4rem;
+    margin-bottom: 1.5rem;
     transition: color 0.5s ease;
     min-height: 3em;
     line-height: 1.5;
@@ -709,6 +776,87 @@ canvas#dust {
     border-top: 1px solid rgba(216, 149, 152, 0.15);
     margin-top: 2rem;
     width: 100%;
+}
+
+/* ============================================
+   QR-КОД
+   ============================================ */
+.qr-wrapper {
+    margin: 0.5rem auto 3rem;
+    opacity: 0;
+    transform: translateY(20px) scale(0.9);
+    transition: opacity 0.8s var(--ease), transform 0.8s var(--ease);
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.qr-wrapper.visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+}
+
+.qr-frame {
+    background: linear-gradient(170deg, #f8f0e2 0%, #ece0ce 100%);
+    padding: 14px;
+    border-radius: 14px;
+    box-shadow:
+        0 20px 40px rgba(0, 0, 0, 0.5),
+        0 0 40px rgba(216, 149, 152, 0.3),
+        inset 0 0 0 1px rgba(0, 0, 0, 0.05);
+    display: inline-block;
+    position: relative;
+    animation: qrFloat 4s ease-in-out infinite;
+}
+
+@keyframes qrFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-4px); }
+}
+
+.qr-frame::before,
+.qr-frame::after {
+    content: '';
+    position: absolute;
+    width: 22px;
+    height: 22px;
+    border: 2px solid var(--rose);
+    opacity: 0.7;
+}
+
+.qr-frame::before {
+    top: -7px;
+    left: -7px;
+    border-right: none;
+    border-bottom: none;
+    border-top-left-radius: 10px;
+}
+
+.qr-frame::after {
+    bottom: -7px;
+    right: -7px;
+    border-left: none;
+    border-top: none;
+    border-bottom-right-radius: 10px;
+}
+
+.qr-code {
+    width: 180px;
+    height: 180px;
+    display: block;
+    border-radius: 4px;
+    background: #fff;
+}
+
+.qr-label {
+    font-family: var(--font-hand);
+    font-size: 1.15rem;
+    color: var(--rose);
+    margin-top: 1rem;
+    text-align: center;
+    letter-spacing: 0.5px;
 }
 
 /* ============================================
