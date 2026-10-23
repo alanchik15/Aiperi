@@ -70,8 +70,7 @@ const CONFIG = {
 
     // ============ СЕКРЕТНОЕ СЕРДЦЕ ============
     secretTaps: 7,
-    secretMessage: 'Открой фильм :Сумерки Сага Рассвет
-00:20:46💌',
+    secretMessage: 'Yes yes i lve you',
 
     // ============ БИТ-ДЕТЕКТОР ============
     beatThreshold: 1.4,
