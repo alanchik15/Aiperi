@@ -3,35 +3,29 @@
    ============================================ */
 const CONFIG = {
     herName: 'Любимая',
-    startDate: '2026-07-18T18:00:00',
-    music: 'prince.mp3',
+    startDate: '2023-06-15T18:00:00',
+    music: 'music/song.mp3',
     musicVolume: 0.35,
 
     // ============ 🌟 ИМЯ ИЗ ЗВЁЗД ============
-    // Имя, которое будет собираться из частиц на первом экране.
-    // Если хочешь другое (например "Анечка") — пиши здесь.
-    starsName: 'Айпериb',
-    // Сколько миллисекунд показывать имя после сборки
-    starsHoldTime: 2500,
-    // Плотность частиц: меньше = быстрее загрузка, но менее чёткий текст
-    // 4 — очень плотно (медленнее), 6 — баланс, 8 — быстро но разряженно
-    starsGap: 5,
+    // null → возьмётся herName. Хочешь другое (например "Анечка") — впиши сюда.
+    starsName: null,
+    starsHoldTime: 2500,  // мс держать имя после сборки
+    starsGap: 5,          // плотность частиц (5 — баланс, 8 — быстро)
 
     // ============ 💌 ТАЙНОЕ ПИСЬМО ============
-    // Текст, который "печатается" после нажатия на восковую печать.
-    // Переносы строки — через \n. Пиши медленно, с душой.
+    // \n\n = пустая строка. Запятая/точка дают паузы — как живая речь.
     secretLetter:
-        `Слушай, я только сейчас по настоящему понял, как сильно затупил.\n\n` +
-        `Мне правда очень жаль за мой холод и за все эти глупые обиды..\n\n` +
-        `Ты вообще этого не заслуживаешь. ` +
-        `Ты для меня очень дорога. ` +
-        `Я правда всё пересмотрел и изменился, ` +
-        `Хочу дарить тебе только тепло и заботу.\n\n` +
-        `спасибо за твоё терпение. Я готов на всё: ` +
-        `чтобы ты всегда чуствовала, как сильно я тобой дорожу.`,
+        `Знаешь, что я понял за всё это время?\n\n` +
+        `Что любовь — это не громкие слова и не красивые жесты. Это мелочи.\n\n` +
+        `Это когда я вижу что-то смешное и первым делом хочу показать тебе. ` +
+        `Когда просыпаюсь раньше — и просто смотрю, как ты спишь. ` +
+        `Когда ловлю себя на том, что улыбаюсь, вспоминая твой голос.\n\n` +
+        `Я не знаю, что будет завтра. Но я точно знаю одно: ` +
+        `я хочу, чтобы все мои "завтра" были с тобой.`,
 
     // ============ QR-КОД ============
-    qrImage: 'qr.jpeg',
+    qrImage: 'qr/qr-code.png',
     qrLabel: 'наведи камеру 📷',
 
     // ============ ПРИЧИНЫ ДНЯ ============
@@ -69,8 +63,8 @@ const CONFIG = {
     ],
 
     // ============ СЕКРЕТНОЕ СЕРДЦЕ ============
-    secretTaps: 3,
-    secretMessage: 'Yes yes i lve you',
+    secretTaps: 7,
+    secretMessage: 'Значит, ты дошла до конца. P.S. посмотри под подушкой 💌',
 
     // ============ БИТ-ДЕТЕКТОР ============
     beatThreshold: 1.4,
@@ -87,14 +81,35 @@ const vibrate = (ms = 8) => navigator.vibrate?.(ms);
 (function initStarsName() {
     const screen = $('#stars-name-screen');
     const canvas = $('#stars-name-canvas');
-    const skip = $('#stars-skip');
+    const skipBtn = $('#stars-skip');
     if (!screen || !canvas) return;
+
+    const displayName = CONFIG.starsName || CONFIG.herName;
 
     const ctx = canvas.getContext('2d');
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
     let W, H;
+    let particles = [];
+    let targetPoints = [];
+    let fontSize = 0;
+    let rafId = null;
+    let finished = false;
 
-    function resize() {
+    const PHASE = { CHAOS: 0, GATHER: 1, HOLD: 2, EXPLODE: 3, DONE: 4 };
+    let phase = PHASE.CHAOS;
+    let phaseStart = performance.now();
+    let exploded = false;
+    let holdEnd = null;
+
+    const CHAOS_DURATION = 1400;
+    const GATHER_DURATION = 1800;
+    const EXPLODE_DURATION = 1500;
+
+    function easeOutQuart(t) {
+        return 1 - Math.pow(1 - t, 4);
+    }
+
+    function resizeCanvas() {
         W = window.innerWidth;
         H = window.innerHeight;
         canvas.width = W * dpr;
@@ -103,9 +118,7 @@ const vibrate = (ms = 8) => navigator.vibrate?.(ms);
         canvas.style.height = H + 'px';
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     }
-    resize();
 
-    // ==== 1. Определяем размер шрифта, чтобы имя влезло ====
     function fitFontSize(text) {
         const maxW = W * 0.85;
         let size = Math.min(W * 0.18, 130);
@@ -117,15 +130,14 @@ const vibrate = (ms = 8) => navigator.vibrate?.(ms);
         return size;
     }
 
-    // ==== 2. Сэмплируем точки из текста ====
-    function samplePoints(text, fontSize) {
+    function samplePoints(text, size) {
         const off = document.createElement('canvas');
         off.width = W * dpr;
         off.height = H * dpr;
         const octx = off.getContext('2d');
         octx.scale(dpr, dpr);
         octx.fillStyle = '#fff';
-        octx.font = `600 ${fontSize}px 'Cormorant Garamond', Georgia, serif`;
+        octx.font = `600 ${size}px 'Cormorant Garamond', Georgia, serif`;
         octx.textAlign = 'center';
         octx.textBaseline = 'middle';
         octx.fillText(text, W / 2, H / 2);
@@ -133,7 +145,8 @@ const vibrate = (ms = 8) => navigator.vibrate?.(ms);
         const img = octx.getImageData(0, 0, off.width, off.height);
         const data = img.data;
         const points = [];
-        const gap = CONFIG.starsGap;
+        // Адаптивный шаг — не даём переполнить экран частицами
+        const gap = Math.max(CONFIG.starsGap, Math.ceil(Math.max(W, H) / 300));
 
         for (let y = 0; y < H; y += gap) {
             for (let x = 0; x < W; x += gap) {
@@ -148,54 +161,73 @@ const vibrate = (ms = 8) => navigator.vibrate?.(ms);
         return points;
     }
 
-    const fontSize = fitFontSize(CONFIG.starsName);
-    const targetPoints = samplePoints(CONFIG.starsName, fontSize);
-
-    // ==== 3. Создаём частицы ====
-    const particles = targetPoints.map((pt) => {
-        // Начальная позиция — случайно по экрану
-        const angle = Math.random() * Math.PI * 2;
+    function buildParticles() {
+        const angleBase = Math.random() * Math.PI * 2;
         const radius = Math.max(W, H) * 0.6;
-        return {
-            x: W / 2 + Math.cos(angle) * radius * Math.random(),
-            y: H / 2 + Math.sin(angle) * radius * Math.random(),
-            tx: pt.x,
-            ty: pt.y,
-            sx: W / 2 + Math.cos(angle) * radius * Math.random(),
-            sy: H / 2 + Math.sin(angle) * radius * Math.random(),
-            r: Math.random() * 1.4 + 0.6,
-            phase: Math.random() * Math.PI * 2,
-            twinkle: Math.random() * 0.5 + 0.5,
-        };
-    });
+        particles = targetPoints.map((pt) => {
+            const angle = angleBase + Math.random() * Math.PI * 2;
+            return {
+                x: W / 2 + Math.cos(angle) * radius * Math.random(),
+                y: H / 2 + Math.sin(angle) * radius * Math.random(),
+                tx: pt.x,
+                ty: pt.y,
+                sx: W / 2 + Math.cos(angle) * radius * Math.random(),
+                sy: H / 2 + Math.sin(angle) * radius * Math.random(),
+                r: Math.random() * 1.4 + 0.6,
+                phase: Math.random() * Math.PI * 2,
+            };
+        });
+    }
 
-    // ==== 4. Фазы анимации ====
-    const PHASE = {
-        CHAOS: 0,
-        GATHER: 1,
-        HOLD: 2,
-        EXPLODE: 3,
-        DONE: 4,
-    };
-    let phase = PHASE.CHAOS;
-    let phaseStart = performance.now();
-    let exploded = false;
+    function startAnimation() {
+        if (rafId) cancelAnimationFrame(rafId);
+        phase = PHASE.CHAOS;
+        phaseStart = performance.now();
+        exploded = false;
+        holdEnd = null;
 
-    const CHAOS_DURATION = 1400;
-    const GATHER_DURATION = 1800;
-    const EXPLODE_DURATION = 1500;
+        resizeCanvas();
+        fontSize = fitFontSize(displayName);
+        targetPoints = samplePoints(displayName, fontSize);
+        buildParticles();
 
-    let holdEnd = null;
+        rafId = requestAnimationFrame(render);
+    }
 
-    function easeOutQuart(t) {
-        return 1 - Math.pow(1 - t, 4);
+    function stopAnimation() {
+        if (rafId) {
+            cancelAnimationFrame(rafId);
+            rafId = null;
+        }
+    }
+
+    function finishNameScreen() {
+        if (finished) return;
+        finished = true;
+        stopAnimation();
+        screen.classList.add('gone');
+    }
+
+    function skipNow() {
+        if (finished || phase === PHASE.EXPLODE || phase === PHASE.DONE) return;
+        phase = PHASE.EXPLODE;
+        phaseStart = performance.now();
+        exploded = true;
+        particles.forEach((p) => {
+            const angle = Math.atan2(p.y - H / 2, p.x - W / 2) + (Math.random() - 0.5) * 0.8;
+            const speed = Math.random() * 800 + 500;
+            p.sx = p.x;
+            p.sy = p.y;
+            p.tx = p.x + Math.cos(angle) * speed;
+            p.ty = p.y + Math.sin(angle) * speed;
+        });
     }
 
     function render(now) {
-        const elapsed = now - phaseStart;
-        ctx.clearRect(0, 0, W, H);
+        if (finished) return;
 
-        // Переходы фаз
+        const elapsed = now - phaseStart;
+
         if (phase === PHASE.CHAOS && elapsed >= CHAOS_DURATION) {
             phase = PHASE.GATHER;
             phaseStart = now;
@@ -207,7 +239,6 @@ const vibrate = (ms = 8) => navigator.vibrate?.(ms);
             phase = PHASE.EXPLODE;
             phaseStart = now;
             exploded = true;
-            // Перенаправляем точки в случайные стороны
             particles.forEach((p) => {
                 const angle = Math.atan2(p.y - H / 2, p.x - W / 2) + (Math.random() - 0.5) * 0.8;
                 const speed = Math.random() * 600 + 400;
@@ -220,13 +251,13 @@ const vibrate = (ms = 8) => navigator.vibrate?.(ms);
             phase = PHASE.DONE;
         }
 
-        // Рисуем
+        ctx.clearRect(0, 0, W, H);
+
         const t = now * 0.001;
         particles.forEach((p) => {
             let progress = 0;
 
             if (phase === PHASE.CHAOS) {
-                // Хаос — свободное движение
                 p.x += Math.cos(t + p.phase) * 0.4;
                 p.y += Math.sin(t + p.phase * 1.3) * 0.4;
             } else if (phase === PHASE.GATHER) {
@@ -248,71 +279,54 @@ const vibrate = (ms = 8) => navigator.vibrate?.(ms);
 
             const twinkle = 0.5 + 0.5 * Math.sin(t * 2 + p.phase);
             let alpha = 0.4 + 0.6 * twinkle;
-            if (phase === PHASE.EXPLODE) {
-                alpha *= (1 - progress);
-            }
+            if (phase === PHASE.EXPLODE) alpha *= (1 - progress);
 
-            // Свечение
             ctx.beginPath();
             ctx.arc(p.x, p.y, p.r + 2, 0, Math.PI * 2);
             ctx.fillStyle = `rgba(216, 149, 152, ${alpha * 0.15})`;
             ctx.fill();
 
-            // Ядро
             ctx.beginPath();
             ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
             ctx.fillStyle = `rgba(255, 230, 220, ${alpha})`;
             ctx.fill();
         });
 
-        if (phase !== PHASE.DONE) {
-            requestAnimationFrame(render);
-        } else {
-            // Финал — экран уходит
+        if (phase === PHASE.DONE) {
             finishNameScreen();
+            return;
         }
+
+        rafId = requestAnimationFrame(render);
     }
 
-    let finished = false;
-    function finishNameScreen() {
-        if (finished) return;
-        finished = true;
-        screen.classList.add('gone');
+    // Пропуск — только через кнопку, не по тапу на всём экране
+    if (skipBtn) {
+        skipBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            skipNow();
+        });
+        skipBtn.addEventListener('touchstart', (e) => {
+            e.stopPropagation();
+        }, { passive: true });
     }
-
-    // Клик = пропуск
-    function skipNow() {
-        if (finished) return;
-        // Быстрый переход к финалу — рассыпаем и уходим
-        if (phase !== PHASE.EXPLODE && phase !== PHASE.DONE) {
-            phase = PHASE.EXPLODE;
-            phaseStart = performance.now();
-            exploded = true;
-            particles.forEach((p) => {
-                const angle = Math.atan2(p.y - H / 2, p.x - W / 2) + (Math.random() - 0.5) * 0.8;
-                const speed = Math.random() * 800 + 500;
-                p.sx = p.x;
-                p.sy = p.y;
-                p.tx = p.x + Math.cos(angle) * speed;
-                p.ty = p.y + Math.sin(angle) * speed;
-            });
-        }
-    }
-
-    screen.addEventListener('click', skipNow);
-    screen.addEventListener('touchstart', skipNow, { passive: true });
 
     // Запуск
-    requestAnimationFrame(render);
+    startAnimation();
 
-    // Резервный таймер — если что-то пойдёт не так, экран всё равно уйдёт
-    setTimeout(() => {
-        finishNameScreen();
-    }, 12000);
+    // Резервный таймер
+    setTimeout(finishNameScreen, 12000);
 
+    // Resize — пересобрать, а не убить
+    let resizeDebounce = null;
     window.addEventListener('resize', () => {
-        // На resize — сразу уходим, чтобы не ломать вёрстку
-        if (!finished) finishNameScreen();
+        if (finished) return;
+        clearTimeout(resizeDebounce);
+        resizeDebounce = setTimeout(() => {
+            if (finished) return;
+            stopAnimation();
+            startAnimation();
+        }, 400);
     });
 })();
 
@@ -623,13 +637,12 @@ window.addEventListener('scroll', () => {
     let started = false;
 
     function delayFor(char, prevChar, nextChar) {
-        // Базовые паузы
         let d = 30 + Math.random() * 35;
 
         if (char === '.') {
-            // Троеточие
-            if (nextChar === '.' || prevChar === '.') d = 200;
-            else d = 750;
+            // Точка внутри многоточия — короткая пауза
+            if (prevChar === '.' || nextChar === '.') d = 180;
+            else d = 750; // конец предложения
         } else if (char === ',') {
             d = 320;
         } else if (char === '!' || char === '?') {
@@ -641,16 +654,14 @@ window.addEventListener('scroll', () => {
         } else if (char === ' ') {
             d = 25 + Math.random() * 20;
         }
-
-        // После "…" или "..." — длинная пауза
         return d;
     }
 
     function typeLetter(text) {
         let i = 0;
+
         function tick() {
             if (i >= text.length) {
-                // Оставляем курсор мигать 2 секунды и убираем
                 setTimeout(() => {
                     if (cursor) cursor.style.display = 'none';
                 }, 2000);
@@ -663,15 +674,15 @@ window.addEventListener('scroll', () => {
             typedEl.textContent += char;
             i++;
 
-            // Спец-пауза после "…"
-            if (char === '.' && prev === '.' && next === '.') {
+            // Спец-пауза ТОЛЬКО после завершения многоточия
+            if (char === '.' && prev === '.' && next !== '.') {
                 setTimeout(tick, 900);
                 return;
             }
 
             setTimeout(tick, delayFor(char, prev, next));
         }
-        // Первая пауза — письмо "раскрывается" перед печатью
+
         setTimeout(tick, 500);
     }
 
@@ -775,7 +786,11 @@ function revealQR() {
     const label = $('#qr-label');
     if (!wrapper || !img) return;
 
-    if (!CONFIG.qrImage) return;
+    if (!CONFIG.qrImage) {
+        console.warn('CONFIG.qrImage не задан — QR-код не покажется');
+        if (label) label.textContent = 'QR пока не настроен';
+        return;
+    }
 
     img.src = CONFIG.qrImage;
     img.alt = 'QR-код';
@@ -834,7 +849,7 @@ document.addEventListener('visibilitychange', () => {
 });
 
 /* ============================================
-   ВИБРАЦИЯ
+   ВИБРАЦИЯ НА КАСАНИЯХ
    ============================================ */
 $$('.music-btn, .photo-item, .promise, .chapter-title, .letter-seal, .secret-heart').forEach((el) => {
     el.addEventListener('touchstart', () => vibrate(5), { passive: true });
