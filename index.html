@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#0e0810">
+    <title>Для тебя</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Caveat:wght@400;600;700&family=Lora:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="locked">
+
+    <!-- Пылинки -->
+    <canvas id="dust" aria-hidden="true"></canvas>
+
+    <!-- Слой со словами песни (за письмом) -->
+    <div class="lyrics-layer" id="lyrics-layer" aria-hidden="true">
+        <p class="lyric-line" id="lyric-line"></p>
+    </div>
+
+    <!-- Фоновое свечение, пульсирующее в такт битам -->
+    <div class="beat-glow" id="beat-glow" aria-hidden="true"></div>
+
+    <!-- Прогресс чтения -->
+    <div class="progress-line" aria-hidden="true">
+        <div class="progress-fill" id="progress-fill"></div>
+    </div>
+
+    <!-- ===================== КОНВЕРТ ===================== -->
+    <section class="envelope-screen" id="envelope-screen">
+        <div class="envelope" id="envelope" role="button" tabindex="0" aria-label="Открыть письмо">
+            <div class="env-back"></div>
+            <div class="env-letter"></div>
+            <div class="env-flap"></div>
+            <div class="env-front"></div>
+            <div class="wax-seal">❤</div>
+        </div>
+        <p class="envelope-hint">коснись конверта</p>
+    </section>
+
+    <!-- ===================== МУЗЫКА ===================== -->
+    <button class="music-btn" id="music-btn" aria-label="Управление музыкой">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+            <path d="M9 18V5l12-2v13" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="6" cy="18" r="3"/>
+            <circle cx="18" cy="16" r="3"/>
+        </svg>
+    </button>
+    <audio id="music" loop preload="none" crossorigin="anonymous"></audio>
+
+    <!-- ===================== ПИСЬМО ===================== -->
+    <main class="letter" id="letter">
+
+        <section class="chapter chapter-open">
+            <p class="greeting handwritten" id="greeting">моей любимой,</p>
+            <h1 class="hero-name" id="her-name">Любимая</h1>
+            <p class="lead">
+                Я долго думал, как сказать тебе всё, что чувствую.
+                Слова на бумаге — слишком мало. Голос — слишком тихо.
+                Поэтому я написал это здесь — там, где ты всегда сможешь вернуться.
+            </p>
+        </section>
+
+        <section class="chapter chapter-counter">
+            <p class="counter-label handwritten reveal">с того самого дня прошло</p>
+            <div class="counter-grid reveal">
+                <div class="counter-item">
+                    <span class="counter-value" id="c-days">0</span>
+                    <span class="counter-unit">дней</span>
+                </div>
+                <div class="counter-item">
+                    <span class="counter-value" id="c-hours">00</span>
+                    <span class="counter-unit">часов</span>
+                </div>
+                <div class="counter-item">
+                    <span class="counter-value" id="c-minutes">00</span>
+                    <span class="counter-unit">минут</span>
+                </div>
+                <div class="counter-item">
+                    <span class="counter-value" id="c-seconds">00</span>
+                    <span class="counter-unit">секунд</span>
+                </div>
+            </div>
+            <p class="counter-foot handwritten reveal">и я бы всё повторил</p>
+        </section>
+
+        <section class="chapter">
+            <span class="chapter-num reveal">I</span>
+            <h2 class="chapter-title reveal">Как всё началось</h2>
+            <p class="chapter-body reveal">
+                Я не верил в судьбу, пока не встретил тебя.
+                Всё, что было до — это лишь подготовка к тому моменту,
+                когда ты впервые улыбнулась мне.
+                Той улыбкой, которую я теперь ищу в каждом дне.
+            </p>
+        </section>
+
+        <section class="chapter chapter-photos">
+            <span class="chapter-num reveal">II</span>
+            <h2 class="chapter-title reveal">Кадры, которые я храню</h2>
+            <p class="chapter-body reveal">Каждое из этих фото — день, который я до сих пор помню в деталях.</p>
+
+            <div class="photo-wall">
+                <figure class="photo-item reveal" data-src="photos/photo1.jpg" data-caption="тот самый день">
+                    <img src="photos/photo1.jpg" alt="" loading="lazy">
+                    <figcaption class="handwritten">тот самый день</figcaption>
+                </figure>
+                <figure class="photo-item reveal" data-src="photos/photo2.jpg" data-caption="когда ты смеялась">
+                    <img src="photos/photo2.jpg" alt="" loading="lazy">
+                    <figcaption class="handwritten">когда ты смеялась</figcaption>
+                </figure>
+                <figure class="photo-item reveal" data-src="photos/photo3.jpg" data-caption="наш закат">
+                    <img src="photos/photo3.jpg" alt="" loading="lazy">
+                    <figcaption class="handwritten">наш закат</figcaption>
+                </figure>
+                <figure class="photo-item reveal" data-src="photos/photo4.jpg" data-caption="самый любимый">
+                    <img src="photos/photo4.jpg" alt="" loading="lazy">
+                    <figcaption class="handwritten">самый любимый</figcaption>
+                </figure>
+            </div>
+        </section>
+
+        <section class="chapter">
+            <span class="chapter-num reveal">III</span>
+            <h2 class="chapter-title reveal">Что я понял</h2>
+            <p class="chapter-body reveal">
+                Что любовь — это не громкие слова и не подарки.
+                Это то, как я скучаю по тебе через час после встречи.
+                Это твоё имя, которое первым появляется в голове, когда я просыпаюсь.
+                Это уверенность, что где бы я ни был — я всегда возвращаюсь к тебе.
+            </p>
+        </section>
+
+        <section class="chapter chapter-promises">
+            <span class="chapter-num reveal">IV</span>
+            <h2 class="chapter-title reveal">Мои обещания тебе</h2>
+            <ul class="promise-list">
+                <li class="promise reveal">Быть рядом. Всегда. Даже когда сложно.</li>
+                <li class="promise reveal">Слушать. Не перебивая. По-настоящему.</li>
+                <li class="promise reveal">Никогда не оставлять тебя одну с твоими мыслями.</li>
+                <li class="promise reveal">Выбирать тебя. Каждый день. Заново.</li>
+                <li class="promise reveal">Любить тебя такой, какая ты есть.</li>
+            </ul>
+        </section>
+
+        <section class="chapter chapter-finale">
+            <p class="finale-lead handwritten reveal">и самое главное...</p>
+            <h2 class="finale-title reveal">Я люблю тебя</h2>
+            <p class="finale-text reveal">
+                Не за что-то. Не потому что. Просто потому что ты — это ты.
+                И этого достаточно, чтобы каждый день моей жизни
+                был лучше предыдущего.
+            </p>
+
+            <button class="secret-heart" id="secret-heart" aria-label="Коснись сердца">
+                <span class="heart-char">❤</span>
+            </button>
+            <p class="secret-hint handwritten" id="secret-hint">коснись сердца...</p>
+
+            <p class="signature handwritten reveal">твой навсегда</p>
+        </section>
+
+    </main>
+
+    <!-- ===================== ЛАЙТБОКС ===================== -->
+    <div class="lightbox" id="lightbox" aria-hidden="true">
+        <button class="lb-close" id="lb-close" aria-label="Закрыть">×</button>
+        <div class="lb-inner">
+            <img id="lb-img" src="" alt="">
+            <p class="lb-caption handwritten" id="lb-caption"></p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
