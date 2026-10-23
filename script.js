@@ -1,15 +1,60 @@
 /* ============================================
-   КОНФИГ
+   КОНФИГ — меняй здесь
    ============================================ */
 const CONFIG = {
     herName: 'Любимая',
     startDate: '2023-06-15T18:00:00',
-    music: 'prince.mp3',
+    music: 'music/song.mp3',
     musicVolume: 0.35,
-    secretTaps: 3,
-    secretMessage: 'Значит, ты дошла до конца.',
+    secretTaps: 7,
+    secretMessage: 'Значит, ты дошла до конца. P.S. посмотри под подушкой 💌',
 
-    // Бит-детектор
+    // ============ QR-КОД ============
+    // Что зашифровать. Идеи:
+    //   • ссылка на YouTube-видео с твоим признанием
+    //   • ссылка на общий плейлист
+    //   • ссылка на папку с фото
+    //   • просто текст
+    qrContent: 'https://youtu.be/dQw4w9WgXcQ',
+    qrLabel: 'наведи камеру 📷',
+
+    // ============ ПРИЧИНЫ ДНЯ ============
+    // Показывается по одной в день. Замени на СВОИ причины —
+    // конкретные, личные, про неё. Чем больше — тем лучше.
+    dailyReasons: [
+        'за то, как ты улыбаешься, когда думаешь, что я не вижу',
+        'за твой смех — самый красивый звук в моей жизни',
+        'за то, как ты умеешь слушать — по-настоящему',
+        'за твои глаза, в которых я теряюсь каждый раз',
+        'за то, что ты рядом, даже когда я невыносим',
+        'за твоё тепло, которое чувствую даже на расстоянии',
+        'за то, как ты морщишь нос, когда злишься',
+        'за твою доброту ко всем вокруг',
+        'за то, что ты веришь в меня больше, чем я сам',
+        'за твои объятия, в которых весь мир замирает',
+        'за то, как ты говоришь моё имя',
+        'за твою силу, о которой ты даже не догадываешься',
+        'за то, что с тобой я дома — где бы мы ни были',
+        'за твои сонные глаза по утрам',
+        'за то, как ты заботишься о мелочах',
+        'за твою искренность — редкий дар',
+        'за то, что ты делаешь меня лучше каждый день',
+        'за твоё «я скучаю», которое греет сильнее солнца',
+        'за то, как ты держишь мою руку — крепко-крепко',
+        'за то, что ты — это ты. И этого достаточно',
+        'за твоё терпение, когда я говорю ерунду',
+        'за твою улыбку в самое неподходящее время — она спасает',
+        'за то, что ты не боишься быть настоящей со мной',
+        'за наши глупые шутки, которые понятны только нам',
+        'за то, что я хочу быть лучше — ради тебя',
+        'за твою нежность, которая обезоруживает',
+        'за то, как ты подпеваешь песням в машине',
+        'за твоё «доброе утро», которое становится моим любимым',
+        'за то, что рядом с тобой время летит незаметно',
+        'за все наши «завтра», которые мы ещё проживём вместе',
+    ],
+
+    // ============ БИТ-ДЕТЕКТОР ============
     beatThreshold: 1.4,
     beatMinInterval: 200,
 };
@@ -378,8 +423,83 @@ secretHeart.addEventListener('click', () => {
         secretHint.textContent = CONFIG.secretMessage;
         secretHint.classList.add('revealed');
         vibrate([30, 80, 30, 80, 50]);
+        revealQR();
     } else {
         secretHint.textContent = `${CONFIG.secretTaps - heartTaps}...`;
+    }
+});
+
+/* ============================================
+   QR-КОД — показ после раскрытия сердца
+   ============================================ */
+function revealQR() {
+    const wrapper = $('#qr-wrapper');
+    const img = $('#qr-code');
+    const label = $('#qr-label');
+    if (!wrapper || !img) return;
+
+    if (!CONFIG.qrContent) {
+        console.warn('qrContent не задан в CONFIG — QR не покажется');
+        return;
+    }
+
+    const data = encodeURIComponent(CONFIG.qrContent);
+    const src = `https://api.qrserver.com/v1/create-qr-code/?size=400x400&margin=10&data=${data}`;
+
+    img.src = src;
+    img.alt = 'QR-код';
+
+    img.onerror = () => {
+        console.warn('QR-сервис недоступен');
+        if (label) label.textContent = 'не удалось загрузить QR';
+    };
+
+    if (label) label.textContent = CONFIG.qrLabel;
+
+    setTimeout(() => {
+        wrapper.classList.add('visible');
+        wrapper.setAttribute('aria-hidden', 'false');
+        wrapper.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 700);
+}
+
+/* ============================================
+   ПРИЧИНА ДНЯ
+   ============================================ */
+function setDailyReason() {
+    const el = $('#daily-reason');
+    if (!el || !CONFIG.dailyReasons?.length) return;
+
+    const now = new Date();
+    const start = new Date(now.getFullYear(), 0, 0);
+    const dayOfYear = Math.floor((now - start) / 86400000);
+    const idx = dayOfYear % CONFIG.dailyReasons.length;
+    const newText = CONFIG.dailyReasons[idx];
+
+    if (el.textContent && el.textContent !== newText) {
+        el.classList.add('fade');
+        setTimeout(() => {
+            el.textContent = newText;
+            el.classList.remove('fade');
+        }, 400);
+    } else {
+        el.textContent = newText;
+    }
+}
+
+setDailyReason();
+setInterval(setDailyReason, 60000);
+
+/* ============================================
+   ЗАГОЛОВОК ВКЛАДКИ — при уходе/возврате
+   ============================================ */
+const originalTitle = document.title;
+document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+        document.title = 'не уходи 💔';
+    } else {
+        document.title = 'ты вернулась ❤️';
+        setTimeout(() => { document.title = originalTitle; }, 2500);
     }
 });
 
